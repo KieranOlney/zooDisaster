@@ -14,11 +14,24 @@ class animal(ABC):
 
     #Methods
     def eat(self,toEat):
+        print(self.type+"ate"+toEat.type)
         for i in range(len(self.canEat)):
             if toEat == self.canEat[i]:
                 toEat.isAlive = False
                 return True,toEat
         return False,toEat
+    
+    def ableToEat(self,toEat):
+        print(self.type+" Tried To Eat")
+        for i in range(len(self.canEat)):
+            testingObj = self.canEat[i]
+            print(testingObj)
+            print(testingObj.type)
+            if toEat == testingObj:
+                print(self.type+"can eat this")
+                return True
+            print("Could not eat",testingObj.type)
+        return False
 
 class mammal(animal):
     #Attributes
