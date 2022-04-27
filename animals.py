@@ -14,21 +14,18 @@ class animal(ABC):
 
     #Methods
     def eat(self,toEat):
-        print(self.type,"ate",toEat.type)
+        eatString = ""
         for i in range(len(self.canEat)):
-            if toEat == self.canEat[i]:
+            if toEat.type == self.canEat[i]:
+                eatString = self.type+" ate "+toEat.type
                 toEat.isAlive = False
-                return True,toEat
-        return False,toEat
+        return eatString
     
     def ableToEat(self,toEat):
         for i in range(len(self.canEat)):
             testPrey = self.canEat[i]
-            print(self.type,"Tried To Eat",testPrey)
             if toEat.type == testPrey:
-                print(self.type+"can eat this")
-                return True
-            print("Could not eat",testPrey)
+                return True 
         return False
 
 class mammal(animal):
@@ -182,7 +179,6 @@ class fox(mammal):
         super().__init__(self.canEat)
         self.type = "fox"
 
-
     #Methods
 
 class bear(mammal):
@@ -193,6 +189,5 @@ class bear(mammal):
     def __init__ (self):
         super().__init__(self.canEat)
         self.type = "bear"
-
 
     #Methods

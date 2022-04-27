@@ -6,7 +6,7 @@ class plant(ABC):
 
     #Constructors
     def __init__ (self):
-        self.type = "Plant"
+        self.type = "plant"
 
     #Methods
 
@@ -15,7 +15,7 @@ class grass(plant):
 
     #Constructors
     def __init__ (self):
-        self.type = "Plant"
+        self.type = "grass"
         
     #Methods
 
@@ -24,6 +24,6 @@ class leaf(plant):
 
     #Constructors
     def __init__ (self):
-        self.type = "Plant"
+        self.type = "leaf"
         
     #Methods
