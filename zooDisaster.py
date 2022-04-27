@@ -1,102 +1,97 @@
 from animals import antelope, bear, big_fish, bug, chicken, cow, fox, lion, little_fish, panda, sheep
 from plants import leaf, grass
 
+def objectFromString(objectName):
+    try:
+        animal = globals()[objectName]()
+    except:
+        print("Exception Occured :",objectName,"is not in my known organisms")
+    return animal
 
-def eatingChain(animalArray):
-    global animalEaten
-    resultsArray = []
-    i = 0
-    while len(animalArray) > 1:
-        newString = ""
-        print(i)
-        canEatLeft = False
-        canEatRight = False
-        hasEaten = False
-        if animalArray[i].type == "grass" or animalArray[i].type == "leaf":
-            i = i + 1
+def objectListFromString(inputString):
+    animalArray = inputString.split(",")
+    animalObjArray = []
+    for animal in animalArray:
+        animalObjArray.append(objectFromString(animal))
+    return animalObjArray
+
+def checkAliveAnimals(animals):
+    aliveAnimals = []
+    for animal in animals:
+        if animal.isAlive is True:
+            aliveAnimals.append(animal)
+        else:
             continue
-        try:
-            if animalArray[i].ableToEat(animalArray[i - 1]) is True:
-                canEatLeft = True
-                print("Can Eat Left")
-        except:
-            pass
+    return aliveAnimals
 
-        try:
-            if animalArray[i].ableToEat(animalArray[i + 1]) is True:
-                canEatRight = True
-                print("Can Eat Right")
-        except:
-            pass
+def checkAnimalEdible(hunter,prey):
+    if hunter.type == "grass" or hunter.type == "leaf":
+        return False
+    try:
+        if hunter.ableToEat(prey) is True:
+            return True
+        return False
+    except:
+        print("Exception Occured: Error in handling the Is animal Able to Eat Check",hunter.type)
 
-        if canEatLeft is True:
-            hasEaten, animalEaten = animalArray[i].eat(animalArray[i - 1])
-        if canEatRight is True:
-            hasEaten, animalEaten = animalArray[i].eat(animalArray[i + 1])
+def checkAnimalsAbleToEat(animals):
+    anyAbleToEat = False
+    if len(animals) == 1:
+        return anyAbleToEat
+    i = 0
+    for i in range(len(animals)):
+        if anyAbleToEat == True:
+            break
+        if i-1 < 0:
+            if checkAnimalEdible(animals[i],animals[i+1]) is True:
+                anyAbleToEat =  True
+            continue
+        elif i+1 >= len(animals):
+            if checkAnimalEdible(animals[i],animals[i-1]) is True:
+                anyAbleToEat =  True
+            continue
+        else:
+            if checkAnimalEdible(animals[i],animals[i-1]) is True:
+                anyAbleToEat =  True
+            elif checkAnimalEdible(animals[i],animals[i+1]) is True:
+                anyAbleToEat =  True
+    return anyAbleToEat
 
-        if hasEaten is True:
-            removeArray = []
-            newString = animalArray[i].type + " has eaten " + animalEaten.type
-            i = 0
-            for j in range(len(animalArray)):
-                if animalArray[j].isAlive is False:
-                    removeArray.append(j)
-            for j in range(len(removeArray)):
-                animalArray.pop(removeArray[j])
-                j = j - 1
-        elif hasEaten is False:
-            newString = animalArray[i].type + " Can't eat anything."
-            i = i + 1
-
-        resultsArray.append(newString)
-    return resultsArray
-
-
-def generateObjects(animalsToGenerate):
-    global newObj
-    animalArray = animalsToGenerate.split(",")
-    arrayOfObjects = []
-    for i in range(len(animalArray)):
-        objectName = animalArray[i]
-        if objectName == "antelope":
-            newObj = antelope()
-        if objectName == "bear":
-            newObj = bear()
-        if objectName == "bug":
-            newObj = bug()
-        if objectName == "chicken":
-            newObj = chicken()
-        if objectName == "cow":
-            newObj = cow()
-        if objectName == "fox":
-            newObj = fox()
-        if objectName == "lion":
-            newObj = lion()
-        if objectName == "panda":
-            newObj = panda()
-        if objectName == "sheep":
-            newObj = sheep()
-        if objectName == "little-fish":
-            newObj = little_fish()
-        if objectName == "big-fish":
-            newObj = big_fish()
-        if objectName == "leaf" or objectName == "leaves":
-            newObj = leaf()
-        if objectName == "grass":
-            newObj = grass()
-        arrayOfObjects.append(newObj)
-    return arrayOfObjects
-
+def eatingChain(inputString):
+    chainOutput = []
+    chainOutput.append(inputString)
+    animals = objectListFromString(inputString)
+    anyAbleToEat = checkAnimalsAbleToEat(animals)
+    while anyAbleToEat is True:
+        for i in range(len(animals)):
+            if i-1 < 0:
+                if checkAnimalEdible(animals[i],animals[i+1]) is True:              
+                    chainOutput.append(animals[i].eat(animals[i+1]))
+                    break
+            elif i+1 > len(animals):
+                if checkAnimalEdible(animals[i],animals[i-1]) is True:
+                    chainOutput.append(animals[i].eat(animals[i-1]))
+                    break
+            else:
+                if checkAnimalEdible(animals[i],animals[i-1]) is True:
+                    chainOutput.append(animals[i].eat(animals[i-1]))
+                    break
+                elif checkAnimalEdible(animals[i],animals[i+1]) is True:
+                    chainOutput.append(animals[i].eat(animals[i+1]))
+                    break
+        animals = checkAliveAnimals(animals)
+        anyAbleToEat = checkAnimalsAbleToEat(animals)
+    finalString = ""
+    for i in range(len(animals)):
+        finalString += animals[i].type
+        if i+1 < len(animals):
+            finalString +=","
+    chainOutput.append(finalString)
+    return chainOutput
 
 def main():
-    resultArray = []
     exampleInput = "fox,bug,chicken,grass,sheep"
-    objectArray = generateObjects(exampleInput)
-    resultArray.append(exampleInput)
-    resultArray = resultArray + eatingChain(objectArray)
-    for i in range(len(resultArray)):
-        print(resultArray[i])
+    print(eatingChain(exampleInput))
     return
-
 
 main()
